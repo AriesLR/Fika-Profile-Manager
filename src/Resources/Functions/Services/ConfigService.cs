@@ -10,8 +10,7 @@ namespace Fika_ProfileManager.Resources.Functions.Services
         public ConfigService()
         {
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string fpmDirectory = Path.Combine(appDirectory, "FPM");
-            string configsDirectory = Path.Combine(fpmDirectory, "configs");
+            string configsDirectory = Path.Combine(appDirectory, "configs");
 
             if (!Directory.Exists(configsDirectory))
             {
