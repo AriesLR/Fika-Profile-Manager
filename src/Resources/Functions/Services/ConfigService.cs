@@ -28,6 +28,7 @@ namespace Fika_ProfileManager.Resources.Functions.Services
             if (!File.Exists(_configFilePath))
             {
                 Debug.WriteLine("[DEBUG]: Config doesn't exist, creating one now.");
+                CreateDefaultConfig();
             }
         }
 

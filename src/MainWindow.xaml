@@ -8,8 +8,8 @@
         xmlns:local="clr-namespace:Fika_ProfileManager"
         mc:Ignorable="d"
         Title="Fika Profile Manager"
-        Height="450"
-        Width="800"
+        Height="500"
+        Width="1000"
         FontFamily="Segoe UI"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanMinimize"
@@ -17,14 +17,90 @@
 
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
-            <Button Click="LaunchBrowserGitHubAriesLR" ToolTip="Open up the PakMaster GitHub repo">
+            <Button Click="LaunchBrowserGitHubAriesLR" ToolTip="Open up AriesLR's GitHub">
                 <iconPacks:PackIconMaterial Width="22" Height="22" Kind="Github" />
             </Button>
         </mah:WindowCommands>
     </mah:MetroWindow.LeftWindowCommands>
-    
-    
-    <Grid>
 
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+
+            <Button Click="btnRefreshUI_Click" Content="Refresh UI">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Width="22" Height="22" VerticalAlignment="Center" Kind="Refresh" />
+                            <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="{Binding}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+            <Button Click="CheckForUpdatesAsync" Content="Check for updates">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Width="22" Height="22" VerticalAlignment="Center" Kind="Update" />
+                            <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="{Binding}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <Grid Background="#1F1F1F">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- SPT Path Browser -->
+        <Grid Grid.Row="0">
+            <StackPanel Margin="0,5,0,0">
+                <TextBlock Text="SPT Path" Foreground="White" FontSize="18" FontWeight="Bold" FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="5"/>
+                <Grid Margin="20,5,20,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="SptPathTextBox" IsReadOnly="True" Background="Transparent" VerticalContentAlignment="Center" Grid.Column="0" mah:TextBoxHelper.Watermark="C:\SPT" />
+                    <Button Content="Browse" Background="#262626" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="BrowseSptPath" Width="100" Grid.Column="1" />
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            
+            <!-- Fika Section -->
+            <StackPanel Grid.Column="0" Background="#222222" Margin="10">
+                <TextBlock Text="Fika Profile" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" />
+
+                <ListBox Name="FikaProfilesListBox" DisplayMemberPath="Key" SelectionMode="Single" Background="Transparent" Margin="5" Height="315" />
+            </StackPanel>
+
+            <!-- Center Section -->
+            <StackPanel Grid.Column="1" Margin="10" VerticalAlignment="Center">
+                <Button Margin="5" Width="150" Height="40" Background="#262626" Click="btnMoveProfile_ClickAsync">
+                    <TextBlock Text="Move Profile" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+            </StackPanel>
+
+            <!-- Local Section -->
+            <StackPanel Grid.Column="2" Background="#222222" Margin="10">
+                <TextBlock Text="Local Profile" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" />
+
+                <ListBox Name="LocalProfilesListBox" DisplayMemberPath="Key" SelectionMode="Single" Background="Transparent" Margin="5" Height="315" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </mah:MetroWindow>

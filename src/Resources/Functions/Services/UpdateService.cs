@@ -1,9 +1,8 @@
-﻿using Fika_ProfileManager.Resources.Functions.Services;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http;
 
-namespace PakMaster.Resources.Functions.Services
+namespace Fika_ProfileManager.Resources.Functions.Services
 {
     public class UpdateService
     {
