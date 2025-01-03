@@ -9,18 +9,16 @@ namespace Fika_ProfileManager.Resources.Functions.Services
         private readonly string _configFilePath;
         public ConfigService()
         {
-            // Get the path of the 'configs' folder next to the app
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string configsDirectory = Path.Combine(appDirectory, "configs");
+            string fpmDirectory = Path.Combine(appDirectory, "FPM");
+            string configsDirectory = Path.Combine(fpmDirectory, "configs");
 
-            // Ensure the 'configs' folder exists
             if (!Directory.Exists(configsDirectory))
             {
                 Directory.CreateDirectory(configsDirectory);
             }
 
-            // Config File Paths
-            _configFilePath = Path.Combine(configsDirectory, "config.json"); // Main Config
+            _configFilePath = Path.Combine(configsDirectory, "config.json");
         }
 
         public void EnsureConfigsExist()
