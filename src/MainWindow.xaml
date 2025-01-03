@@ -93,6 +93,9 @@
                 <Button Margin="5" Width="150" Height="40" Background="#262626" Click="btnMoveProfile_ClickAsync">
                     <TextBlock Text="Move Profile" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Button>
+                <Button Margin="5" Width="150" Height="40" Background="#262626" Click="btnPlaySpt_ClickAsync">
+                    <TextBlock Text="Play SPT Solo" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
             </StackPanel>
 
             <!-- Local Section -->

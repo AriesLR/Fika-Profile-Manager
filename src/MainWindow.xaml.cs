@@ -1,7 +1,9 @@
 ﻿using Fika_ProfileManager.Resources.Functions.Services;
 using MahApps.Metro.Controls;
 using Microsoft.Win32;
+using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 using System.Windows;
 
 namespace Fika_ProfileManager
@@ -12,6 +14,7 @@ namespace Fika_ProfileManager
 
         private string? fikaProfilePath;
         private string? localProfilePath;
+        private string? launcherConfigPath;
 
         public MainWindow()
         {
@@ -44,8 +47,10 @@ namespace Fika_ProfileManager
                 if (!string.IsNullOrEmpty(sptPath))
                 {
                     string userFolderPath = Path.Combine(sptPath, "user");
+                    string launcherFolderPath = Path.Combine(userFolderPath, "launcher");
                     fikaProfilePath = Path.Combine(userFolderPath, "fika");
                     localProfilePath = Path.Combine(userFolderPath, "profiles");
+                    launcherConfigPath = Path.Combine(launcherFolderPath, "config.json");
 
                     SptPathTextBox.Text = sptPath;
 
@@ -132,6 +137,127 @@ namespace Fika_ProfileManager
             else
             {
                 await MessageService.ShowWarning("Please select a fika profile to move.");
+            }
+        }
+
+        // Play SPT
+        private async void btnPlaySpt_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            await DisableDevMode();
+            await RunSptServerAsync();
+            await Task.Delay(15000);
+            await RunSptLauncherAsync();
+
+            await Task.Delay(2000);
+            Application.Current.Shutdown();
+        }
+
+        // Disable Dev Mode
+        private async Task DisableDevMode()
+        {
+            try
+            {
+                // Disable Dev Mode
+                if (File.Exists(launcherConfigPath))
+                {
+                    string jsonContent = await File.ReadAllTextAsync(launcherConfigPath);
+                    var config = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent);
+
+                    if (config != null && config.TryGetValue("IsDevMode", out var isDevMode))
+                    {
+                        if (isDevMode is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.True)
+                        {
+                            config["IsDevMode"] = false;
+
+                            string updatedJson = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                            await File.WriteAllTextAsync(launcherConfigPath, updatedJson);
+                        }
+                        else if (isDevMode is JsonElement element && element.ValueKind == JsonValueKind.False)
+                        {
+                            await MessageService.ShowInfo("Config Unchanged", "Development mode is already disabled.");
+                        }
+                        else
+                        {
+                            await MessageService.ShowError("The 'IsDevMode' value in the config is invalid.");
+                        }
+                    }
+                    else
+                    {
+                        await MessageService.ShowError("The config does not contain an 'IsDevMode' key.");
+                    }
+                }
+                else
+                {
+                    await MessageService.ShowError("The config file does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while processing the config: {ex.Message}");
+            }
+        }
+
+        // Run SPT Server
+        private async Task RunSptServerAsync()
+        {
+            try
+            {
+                var config = _configService.LoadAppConfig<dynamic>();
+                string sptPath = config?.SptPath ?? string.Empty;
+
+                // Ensure the SPT.Server.exe exists
+                string serverExecutablePath = Path.Combine(sptPath, "SPT.Server.exe");
+                if (!File.Exists(serverExecutablePath))
+                {
+                    await MessageService.ShowError("SPT.Server.exe not found in the specified path.");
+                    return;
+                }
+
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = serverExecutablePath,
+                    WorkingDirectory = sptPath,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processStartInfo);
+
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while starting SPT.Server.exe: {ex.Message}");
+            }
+        }
+
+        // Run SPT Launcher
+        private async Task RunSptLauncherAsync()
+        {
+            try
+            {
+                var config = _configService.LoadAppConfig<dynamic>();
+                string sptPath = config?.SptPath ?? string.Empty;
+
+                // Ensure the SPT.Launcher.exe exists
+                string serverExecutablePath = Path.Combine(sptPath, "SPT.Launcher.exe");
+                if (!File.Exists(serverExecutablePath))
+                {
+                    await MessageService.ShowError("SPT.Launcher.exe not found in the specified path.");
+                    return;
+                }
+
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = serverExecutablePath,
+                    WorkingDirectory = sptPath,
+                    UseShellExecute = true
+                };
+
+                Process.Start(processStartInfo);
+
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while starting SPT.Launcher.exe: {ex.Message}");
             }
         }
 
