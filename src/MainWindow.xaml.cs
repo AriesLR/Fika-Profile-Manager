@@ -140,16 +140,42 @@ namespace Fika_ProfileManager
             }
         }
 
-        // Play SPT
+        // Play SPT (solo)
         private async void btnPlaySpt_ClickAsync(object sender, RoutedEventArgs e)
         {
-            await DisableDevMode();
-            await RunSptServerAsync();
-            await Task.Delay(15000);
-            await RunSptLauncherAsync();
+            bool userConfirmed = await MessageService.ShowYesNo("Launch Game", "You're about to launch in Singleplayer Mode, are you sure?");
+            if (userConfirmed)
+            {
+                await DisableDevMode();
+                await Task.Delay(2000);
+                await RunSptServerAsync();
+                await Task.Delay(15000);
+                await RunSptLauncherAsync();
 
-            await Task.Delay(2000);
-            Application.Current.Shutdown();
+                await Task.Delay(2000);
+                Application.Current.Shutdown();
+            }
+        }
+
+        // Play Fika (MP)
+        private async void btnPlayFika_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            bool userConfirmed = await MessageService.ShowYesNo("Launch Game", "You're about to launch in Multiplayer Mode, are you sure?");
+            if (userConfirmed)
+            {
+                await EnableDevMode();
+                await Task.Delay(2000);
+                await RunSptLauncherAsync();
+
+                await Task.Delay(2000);
+                Application.Current.Shutdown();
+            }
+        }
+
+        // Open Local Profile Path
+        private async void btnOpenLocalProfilePath_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            await OpenLocalProfileFolderAsync();
         }
 
         // Disable Dev Mode
@@ -157,7 +183,6 @@ namespace Fika_ProfileManager
         {
             try
             {
-                // Disable Dev Mode
                 if (File.Exists(launcherConfigPath))
                 {
                     string jsonContent = await File.ReadAllTextAsync(launcherConfigPath);
@@ -171,14 +196,7 @@ namespace Fika_ProfileManager
 
                             string updatedJson = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
                             await File.WriteAllTextAsync(launcherConfigPath, updatedJson);
-                        }
-                        else if (isDevMode is JsonElement element && element.ValueKind == JsonValueKind.False)
-                        {
-                            await MessageService.ShowInfo("Config Unchanged", "Development mode is already disabled.");
-                        }
-                        else
-                        {
-                            await MessageService.ShowError("The 'IsDevMode' value in the config is invalid.");
+                            Debug.WriteLine("[DEBUG]: IsDevMode = false");
                         }
                     }
                     else
@@ -194,6 +212,68 @@ namespace Fika_ProfileManager
             catch (Exception ex)
             {
                 await MessageService.ShowError($"An error occurred while processing the config: {ex.Message}");
+            }
+        }
+
+        // Enable Dev Mode
+        private async Task EnableDevMode()
+        {
+            try
+            {
+                if (File.Exists(launcherConfigPath))
+                {
+                    string jsonContent = await File.ReadAllTextAsync(launcherConfigPath);
+                    var config = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent);
+
+                    if (config != null && config.TryGetValue("IsDevMode", out var isDevMode))
+                    {
+                        if (isDevMode is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.False)
+                        {
+                            config["IsDevMode"] = true;
+
+                            string updatedJson = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                            await File.WriteAllTextAsync(launcherConfigPath, updatedJson);
+                            Debug.WriteLine("[DEBUG]: IsDevMode = true");
+
+                        }
+                    }
+                    else
+                    {
+                        await MessageService.ShowError("The config does not contain an 'IsDevMode' key.");
+                    }
+                }
+                else
+                {
+                    await MessageService.ShowError("The config file does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while processing the config: {ex.Message}");
+            }
+        }
+
+        // Open Local Profile Folder
+        private async Task OpenLocalProfileFolderAsync()
+        {
+            try
+            {
+                if (Directory.Exists(localProfilePath))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = localProfilePath,
+                        UseShellExecute = true,
+                    });
+                }
+                else
+                {
+                    await MessageService.ShowError("The specified folder does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while trying to open the folder: {ex.Message}");
             }
         }
 
@@ -220,6 +300,7 @@ namespace Fika_ProfileManager
                     UseShellExecute = true
                 };
 
+                Debug.WriteLine("Starting SPT.Server.exe");
                 Process.Start(processStartInfo);
 
             }
@@ -252,6 +333,7 @@ namespace Fika_ProfileManager
                     UseShellExecute = true
                 };
 
+                Debug.WriteLine("Starting SPT.Launcher.exe");
                 Process.Start(processStartInfo);
 
             }

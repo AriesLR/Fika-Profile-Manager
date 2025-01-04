@@ -82,25 +82,35 @@
             </Grid.ColumnDefinitions>
             
             <!-- Fika Section -->
-            <StackPanel Grid.Column="0" Background="#222222" Margin="10">
-                <TextBlock Text="Fika Profile" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" />
+            <StackPanel Grid.Column="0" Background="#252525" Margin="10">
+                <StackPanel Background="#222222" Height="35">
+                    <TextBlock Text="Fika Profile (Multiplayer)" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </StackPanel>
 
                 <ListBox Name="FikaProfilesListBox" DisplayMemberPath="Key" SelectionMode="Single" Background="Transparent" Margin="5" Height="315" />
             </StackPanel>
 
             <!-- Center Section -->
             <StackPanel Grid.Column="1" Margin="10" VerticalAlignment="Center">
-                <Button Margin="5" Width="150" Height="40" Background="#262626" Click="btnMoveProfile_ClickAsync">
+                <Button Margin="0,0,0,85" Width="150" Height="40" Background="#262626" Click="btnMoveProfile_ClickAsync">
                     <TextBlock Text="Move Profile" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Button>
-                <Button Margin="5" Width="150" Height="40" Background="#262626" Click="btnPlaySpt_ClickAsync">
-                    <TextBlock Text="Play SPT Solo" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Button Margin="0,0,0,10" Width="150" Height="40" Background="#262626" Click="btnPlaySpt_ClickAsync">
+                    <TextBlock Text="Play Singleplayer" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+                <Button Margin="0,0,0,0" Width="150" Height="40" Background="#262626" Click="btnPlayFika_ClickAsync">
+                    <TextBlock Text="Play Multiplayer" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+                <Button Margin="0,85,0,0" Width="175" Height="40" Background="#262626" Click="btnOpenLocalProfilePath_ClickAsync">
+                    <TextBlock Text="Open Local Save Folder" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Button>
             </StackPanel>
 
             <!-- Local Section -->
-            <StackPanel Grid.Column="2" Background="#222222" Margin="10">
-                <TextBlock Text="Local Profile" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" />
+            <StackPanel Grid.Column="2" Background="#252525" Margin="10">
+                <StackPanel Background="#222222" Height="35">
+                    <TextBlock Text="Local Profile (Singleplayer)" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" />
+                </StackPanel>
 
                 <ListBox Name="LocalProfilesListBox" DisplayMemberPath="Key" SelectionMode="Single" Background="Transparent" Margin="5" Height="315" />
             </StackPanel>
