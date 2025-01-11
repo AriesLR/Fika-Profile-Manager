@@ -53,6 +53,7 @@ namespace Fika_ProfileManager
                     launcherConfigPath = Path.Combine(launcherFolderPath, "config.json");
 
                     SptPathTextBox.Text = sptPath;
+                    FikaIpTextBox.Text = config.ServerIp;
 
                     RefreshUI();
                 }
@@ -98,6 +99,111 @@ namespace Fika_ProfileManager
                     RefreshUI();
                 }
             }
+        }
+
+        // Save Fika IP
+        private async Task SaveFikaIpAsync()
+        {
+            try
+            {
+                var config = _configService.LoadAppConfig<dynamic>();
+
+                if (config != null && config.ServerIp != null)
+                {
+                    string newUrl = FikaIpTextBox.Text.Trim();
+
+                    if (!string.IsNullOrEmpty(newUrl))
+                    {
+                        config.ServerIp = newUrl;
+
+                        _configService.SaveAppConfig(config);
+
+                        await MessageService.ShowSplash();
+                    }
+                    else
+                    {
+                        await MessageService.ShowWarning("Please provide a valid URL in the Fika IP textbox.");
+                    }
+                }
+                else
+                {
+                    await MessageService.ShowError("Failed to load the configuration or locate the 'Server' section.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while saving the Fika IP: {ex.Message}");
+            }
+        }
+
+        // Get Ip from app config
+        private async Task SetServerUrlAsync()
+        {
+            try
+            {
+                var appConfig = _configService.LoadAppConfig<dynamic>();
+                string serverIp = appConfig?.ServerIp;
+
+                if (string.IsNullOrEmpty(serverIp))
+                {
+                    await MessageService.ShowError("Server IP is not defined in the application configuration.");
+                    return;
+                }
+
+                if (File.Exists(launcherConfigPath))
+                {
+                    string jsonContent = await File.ReadAllTextAsync(launcherConfigPath);
+                    var config = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent);
+
+                    if (config != null)
+                    {
+                        if (config.TryGetValue("Server", out var serverSection) &&
+                            serverSection is JsonElement serverElement &&
+                            serverElement.ValueKind == JsonValueKind.Object)
+                        {
+                            var serverConfig = JsonSerializer.Deserialize<Dictionary<string, object>>(serverElement.GetRawText());
+
+                            if (serverConfig != null && serverConfig.ContainsKey("Url"))
+                            {
+                                serverConfig["Url"] = serverIp;
+
+                                config["Server"] = serverConfig;
+
+                                string updatedJson = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                                await File.WriteAllTextAsync(launcherConfigPath, updatedJson);
+
+                                Debug.WriteLine($"[DEBUG]: Updated Url to '{serverIp}'");
+                            }
+                            else
+                            {
+                                await MessageService.ShowError("The 'Server' section does not contain a 'Url' key.");
+                            }
+                        }
+                        else
+                        {
+                            await MessageService.ShowError("The config does not contain a valid 'Server' section.");
+                        }
+                    }
+                    else
+                    {
+                        await MessageService.ShowError("Failed to parse the configuration file.");
+                    }
+                }
+                else
+                {
+                    await MessageService.ShowError("The configuration file does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MessageService.ShowError($"An error occurred while processing the configuration: {ex.Message}");
+            }
+        }
+
+        // Save Fika IP
+        private async void btnSaveFikaIp_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            await SaveFikaIpAsync();
         }
 
         // Move Profile (Backup and Move)
@@ -164,6 +270,9 @@ namespace Fika_ProfileManager
             if (userConfirmed)
             {
                 await EnableDevMode();
+                await Task.Delay(1000);
+                await SaveFikaIpAsync();
+                await SetServerUrlAsync();
                 await Task.Delay(2000);
                 await RunSptLauncherAsync();
 

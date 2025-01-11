@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:Fika_ProfileManager"
         mc:Ignorable="d"
         Title="Fika Profile Manager"
-        Height="500"
+        Height="575"
         Width="1000"
         FontFamily="Segoe UI"
         WindowStartupLocation="CenterOwner"
@@ -70,6 +70,18 @@
                     </Grid.ColumnDefinitions>
                     <TextBox Name="SptPathTextBox" IsReadOnly="True" Background="Transparent" VerticalContentAlignment="Center" Grid.Column="0" mah:TextBoxHelper.Watermark="C:\SPT" />
                     <Button Content="Browse" Background="#262626" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="BrowseSptPath" Width="100" Grid.Column="1" />
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Margin="0,75,0,0">
+                <TextBlock Text="Multiplayer IP" Foreground="White" FontSize="18" FontWeight="Bold" FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="5"/>
+                <Grid Margin="20,5,20,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="FikaIpTextBox" IsReadOnly="False" Background="Transparent" VerticalContentAlignment="Center" Grid.Column="0" mah:TextBoxHelper.Watermark="http:\\127.0.0.1" />
+                    <Button Content="Save" Background="#262626" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="btnSaveFikaIp_ClickAsync" Width="100" Grid.Column="1" />
                 </Grid>
             </StackPanel>
         </Grid>

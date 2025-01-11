@@ -34,7 +34,8 @@ namespace Fika_ProfileManager.Resources.Functions.Services
         {
             var defaultConfig = new
             {
-                SptPath = string.Empty
+                SptPath = string.Empty,
+                ServerIp = string.Empty
             };
 
             SaveConfig(_configFilePath, defaultConfig);

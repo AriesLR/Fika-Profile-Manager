@@ -78,5 +78,18 @@ namespace Fika_ProfileManager.Resources.Functions.Services
 
             await mainWindow.ShowMessageAsync("Error", message, MessageDialogStyle.Affirmative);
         }
+
+        public static async Task ShowSplash()
+        {
+            var mainWindow = GetMainWindow();
+            if (mainWindow == null)
+                throw new InvalidOperationException("Main window is not a MetroWindow or has not been set.");
+
+            await mainWindow.ShowOverlayAsync();
+
+            await Task.Delay(500);
+
+            await mainWindow.HideOverlayAsync();
+        }
     }
 }
